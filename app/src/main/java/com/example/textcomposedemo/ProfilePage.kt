@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 
 @Composable
 fun ProfilePage() {
@@ -33,30 +34,49 @@ fun ProfilePage() {
             top = 100.dp, bottom = 100.dp, start = 16.dp, end = 16.dp
         )
     ) {
-        Column(
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxHeight()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(rememberScrollState())
         ) {
+            val (image, nameText, lastNameText, detailsRow, buttonsRow) = createRefs()
+            val guideLine = createGuidelineFromTop(0.2f)
             Image(
                 painter = painterResource(id = R.drawable.image),
                 contentDescription = "Developer",
                 modifier = Modifier
                     .size(150.dp)
                     .clip(CircleShape)
+                    .constrainAs(image) {
+                        top.linkTo(guideLine)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
             )
+
             Text(text = "Sadaqat Ali",
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 16.dp))
-            Text(text = "Panhwer")
+                modifier = Modifier.constrainAs(nameText) {
+                    top.linkTo(image.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }.padding(top = 16.dp))
+
+            Text(text = "Panhwer",
+                modifier = Modifier.constrainAs(lastNameText){
+                    top.linkTo(nameText.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                })
 
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .constrainAs(detailsRow){
+                        top.linkTo(lastNameText.bottom)
+                    }
             ) {
                 profileStatus(count = "150", text = "Followers")
                 profileStatus(count = "100", text = "Following")
@@ -68,6 +88,9 @@ fun ProfilePage() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .constrainAs(buttonsRow) {
+                        top.linkTo(detailsRow.bottom)
+                    }
             ) {
                 Button(onClick = { /*TODO*/ }) {
                     Text(text = "Follow")
